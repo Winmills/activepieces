@@ -3,7 +3,7 @@ services:
     name: activepieces-main
     env: docker
     dockerfilePath: ./Dockerfile
-    dockerContext: ./docker
+    dockerContext: ./
     repo: https://github.com/Winmills/activepieces.git
     autoDeploy: false
     envVars:
