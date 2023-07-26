@@ -1,0 +1,67 @@
+services:
+  - type: web
+    name: activepieces-main
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./docker
+    repo: https://github.com/Winmills/activepieces.git
+    autoDeploy: false
+    envVars:
+      - key: HOST
+        fromService:
+          name: activepieces-main
+          type: web
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: activepieces-database
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: activepieces-database
+          property: port
+      - key: POSTGRES_DATABASE
+        fromDatabase:
+          name: activepieces-database
+          property: database
+      - key: POSTGRES_USERNAME
+        fromDatabase:
+          name: activepieces-database
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: activepieces-database
+          property: password
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: activepieces-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: activepieces-redis
+          property: port
+      - fromGroup: common-env-vars
+  - type: redis
+    name: activepieces-redis
+    ipAllowList: [] # allow only internal connections
+    maxmemoryPolicy: noeviction
+databases:
+  - name: activepieces-database
+    databaseName: activepieces
+envVarGroups:
+  - name: common-env-vars
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: PROTOCOL
+        value: https
+      - key: PORT
+        value: 443
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: WEBHOOK_SECRET_KEY
+        generateValue: true
+      - key: APP_SECRET_KEY
+        generateValue: true
